@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Speech</title>
+
+  <style type="text/css" media="screen">
+    html {
+      font-family: Helvetica, Arial, sens-serif;
+      font-size: 100%;
+    }
+
+    #container {
+      width: 640px;
+      background: #FFFFFF;
+      padding: 1em;
+      margin: 1em auto;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.8);
+      margin-top: 100px;
+    }
+
+    h1{
+      margin-top: 0;
+    }
+
+    #msg {
+      font-size: 0.9em;
+      line-height: 1.4em;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 0.5em;
+      font-size: 1.2em;
+      border-radius: 3px;
+      border: 1px solid #d9d9d9;
+      box-shadow: 0 2px 3px rgba(0,0,0,0.1) inset;
+    }
+
+    input[type="range"] {
+      width: 300px;
+    }
+
+    label {
+      display: inline-block;
+      float: left;
+      width: 150px;
+    }
+
+    .option {
+      margin: 1em 0;
+      margin-bottom: 20px;
+    }
+
+    button {
+      display: inline-block;
+      border-radius: 3px;
+      border: none;
+      font-size: 0.9rem;
+      padding: 0.5rem 0.8em;
+      background: #2e7d32;
+      color: white;
+      font-weight: bold;
+      margin: 0;
+      width: 100%;
+      text-align: center;
+    }
+
+    button:hover, button:focus {
+      opacity: 0.7;
+      cursoer: pointer;
+    }
+
+    button:active {
+      opacity: 1;
+    }
+
+
+
+  </style>
+
+</head>
+<body>
+  <div id="container">
+    <h1>Web Speech API</h1>
+    <p id="msg"></p>
+    <input type="text" name="speech-msg" id="speech-msg">
+    <div class="option">
+      <label for="voice">Voice</label>
+      <select name="voice" id="voice"></select>
+    </div>
+    <div class="option">
+      <label for="volume">Volume</label>
+      <input type="range" min="0" max="1" step="0.1" name="volume" value="1" />
+    </div>
+
+    <div class="option">
+      <label for="rate">Rate</label>
+      <input type="range" min="0.1" max="10" step="0.1" name="rate" value="1" />
+    </div>
+
+    <div class="option">
+      <label for="pitch">Pitch</label>
+      <input type="range" min="0" max="2" step="0.1" name="pitch" value="1" />
+    </div>
+
+    <button id="speak">Speak</button>
+
+  </div>
+
+  <script type="text/javascript">
+    function loadVoices(){
+      var voices = speechSynthesis.getVoices();
+      voices.forEach(function(voice,i){
+        var option = document.createElement("option");
+        option.value = voice.name;
+        option.innerHTML = voice.name;
+        voiceSelect.appendChild(option);
+      })
+    }
+
+    function speak(text){
+      var msg = new SpeechSynthesisUtterance();
+      console.log(msg)
+      msg.text = text;
+
+      if (voiceSelect.value){
+        msg.voice = speechSynthesis.getVoices().filter((voice) => voice.name == voiceSelect.value)[0];
+      }
+      console.log("msg.voice", msg.voice)
+      window.speechSynthesis.speak(msg);
+    }
+    var supportMsg = document.getElementById("msg");
+    var button = document.getElementById("speak");
+    var speechMsgInput = document.getElementById("speech-msg");
+    console.log("speechMsgInput", speechMsgInput)
+    var voiceSelect = document.getElementById("voice");
+    console.log("voiceSelect", voiceSelect)
+    var volumeInput = document.getElementById("volume");
+    var rateInput = document.getElementById("rate");
+    var pitchInput = document.getElementById("pitch");
+
+    if ('speechSynthesis' in window){
+      supportMsg.innerHTML = "Your browser <strong>supports</strong> speech synthesis.";
+    } else {
+      supportMsg.innerHTML = "Sorry, your browser <strong> does not support </strong> speech synthesis.";
+    }
+
+    loadVoices();
+    window.speechSynthesis.onvoiceschanged = function(e){
+      loadVoices();
+    }
+    button.addEventListener('click', function(e){
+      if (speechMsgInput.value.length > 0){
+        speak(speechMsgInput.value);
+      }
+    })
+  </script>
+</body>
+</html>
